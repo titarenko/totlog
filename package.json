@@ -22,7 +22,7 @@
     "pattern",
     "dynamic",
     "filename",
-    "reload",
+    "reload"
   ],
   "author": "Constantin Titarenko",
   "license": "MIT",
