@@ -1,0 +1,42 @@
+{
+  "name": "totlog",
+  "version": "0.0.1",
+  "description": "The Only True Logger",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/titarenko/totlog.git"
+  },
+  "keywords": [
+    "logging",
+    "categorized",
+    "colorized",
+    "prettified",
+    "pretty",
+    "color",
+    "category",
+    "log",
+    "pattern",
+    "dynamic",
+    "filename",
+    "reload",
+  ],
+  "author": "Constantin Titarenko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/titarenko/totlog/issues"
+  },
+  "homepage": "https://github.com/titarenko/totlog#readme",
+  "dependencies": {
+    "bluebird": "^3.0.5",
+    "colors": "^1.1.2",
+    "lodash": "^3.10.1",
+    "mkdirp": "^0.5.1",
+    "moment": "^2.10.6",
+    "pretty-error": "^1.2.0",
+    "wildcard": "^1.1.2"
+  }
+}
