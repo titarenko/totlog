@@ -3,7 +3,10 @@ var _ = require('lodash');
 
 var fs = Promise.promisifyAll(require('fs'));
 var path = require('path');
-var mkdirpSync = _.memoize(require('mkdirp').sync);
+
+var mkdirp = require('mkdirp');
+var mkdirpSync = _.memoize(mkdirp.sync);
+var mkdirpAsync = _.memoize(Promise.promisify(mkdirp));
 
 var EOL = require('os').EOL;
 
@@ -34,8 +37,8 @@ function build (config) {
 	function writeDynamicFilenameCreateDirectories (message) {
 		var filename = dynamicFilename(message);
 		var dirname = path.dirname(filename);
-		return mkdirp(dirname).then(function () {
-			fs.appendFileAsync(filename, message.text + EOL);
+		return mkdirpAsync(dirname).then(function () {
+			return fs.appendFileAsync(filename, message.text + EOL);
 		});
 	}
 
