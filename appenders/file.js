@@ -3,7 +3,7 @@ var _ = require('lodash');
 
 var fs = Promise.promisifyAll(require('fs'));
 var path = require('path');
-var mkdirp = _.memoize(Promise.promisify(require('mkdirp')));
+var mkdirpSync = _.memoize(require('mkdirp').sync);
 
 var EOL = require('os').EOL;
 
@@ -17,7 +17,7 @@ function build (config) {
 	var dynamicFilename = _.template(config.filename);
 
 	if (staticFilename && config.mkdirp) {
-		mkdirp.sync(path.dirname(staticFilename));
+		mkdirpSync(path.dirname(staticFilename));
 	}
 
 	var write = staticFilename && writeStaticFilename || (config.mkdirp 
