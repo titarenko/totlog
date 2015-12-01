@@ -3,6 +3,7 @@ var fs = require('fs');
 var colors = require('colors/safe');
 var levels = require('./levels');
 
+colors.enabled = true;
 _.templateSettings.interpolate = /{{([\s\S]+?)}}/g; // {{ expression }} placeholder format
 
 module.exports = {
