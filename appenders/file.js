@@ -12,6 +12,9 @@ var EOL = require('os').EOL;
 
 module.exports = {
 	name: 'file',
+	defaults: {
+		encoding: 'ansi',
+	},
 	build: build
 };
 
@@ -23,26 +26,26 @@ function build (config) {
 		mkdirpSync(path.dirname(staticFilename));
 	}
 
-	var write = staticFilename && writeStaticFilename || (config.mkdirp 
+	var write = staticFilename && _.partial(append, staticFilename) || (config.mkdirp 
 		? writeDynamicFilenameCreateDirectories 
 		: writeDynamicFilenameNoDirectoryCreation
 	);
 
 	return write;
 
-	function writeStaticFilename (message) {
-		return fs.appendFileAsync(staticFilename, message.text + EOL);
-	}
-
 	function writeDynamicFilenameCreateDirectories (message) {
 		var filename = dynamicFilename(message);
 		var dirname = path.dirname(filename);
 		return mkdirpAsync(dirname).then(function () {
-			return fs.appendFileAsync(filename, message.text + EOL);
+			return append(filename, message);
 		});
 	}
 
 	function writeDynamicFilenameNoDirectoryCreation (message) {
-		return fs.appendFileAsync(dynamicFilename(message), message.text + EOL);
+		return append(dynamicFilename(message), message);
+	}
+
+	function append (filename, message) {
+		return fs.appendFileAsync(filename, message.text + EOL, config.encoding);
 	}
 }
