@@ -31,7 +31,7 @@ function stringify (errorRenderer, jsonRenderer, instance) {
 	if (_.isString(instance)) {
 		return instance;
 	}
-	if (_.isError(instance)) {
+	if (_.isError(instance) || instance instanceof Error) {
 		return errorRenderer(instance);
 	}
 	if (_.isObject(instance)) {
@@ -40,8 +40,13 @@ function stringify (errorRenderer, jsonRenderer, instance) {
 	return '' + instance;
 }
 
-var colorizedPrettyError = new PrettyError();
-var prettyError = new PrettyError().withoutColors();
+var colorizedPrettyError = new PrettyError().skip(skipStackTraceLine);
+var prettyError = new PrettyError().withoutColors().skip(skipStackTraceLine);
+
+function skipStackTraceLine (line) {
+	var original = line.original;
+	return original.indexOf('node_modules') !== -1 || original.indexOf('/') === -1;
+}
 
 var stringifiers = {
 	message: {
