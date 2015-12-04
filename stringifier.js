@@ -44,8 +44,8 @@ var colorizedPrettyError = new PrettyError().skip(skipStackTraceLine);
 var prettyError = new PrettyError().withoutColors().skip(skipStackTraceLine);
 
 function skipStackTraceLine (line) {
-	var original = line.original;
-	return original.indexOf('node_modules') !== -1 || original.indexOf('/') === -1;
+	var original = line.original || line;
+	return _.isEmpty(original) || original.indexOf('node_modules') !== -1 || original.indexOf('/') === -1;
 }
 
 var stringifiers = {
