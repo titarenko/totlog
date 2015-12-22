@@ -4,7 +4,6 @@ var colors = require('colors/safe');
 var levels = require('./levels');
 
 colors.enabled = true;
-_.templateSettings.interpolate = /{{([\s\S]+?)}}/g; // {{ expression }} placeholder format
 
 module.exports = {
 	registerAppenderDefaults: registerAppenderDefaults,
@@ -17,7 +16,7 @@ var preferenceKeys = ['level', 'category', 'fatal', 'time', 'layout', 'colors', 
 
 var defaultConfig = {
 	time: 'YYYY-MM-DD HH:mm:ss.sss',
-	layout: '{{time}} {{level}} {{category}} {{text}}',
+	layout: '${time} ${level} ${category} ${text}',
 	level: 'debug',
 	category: '*',
 	fatal: {
