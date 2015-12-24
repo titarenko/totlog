@@ -16,7 +16,9 @@ module.exports = {
 };
 
 function build (config) {
-	var staticFilename = config.filename.match(_.templateSettings.interpolate) ? null : config.filename;
+	var staticFilename = config.filename.match(_.templateSettings.interpolate) || config.filename.match(/\${\S+}/)
+		? null 
+		: config.filename;
 	var dynamicFilename = _.template(config.filename);
 
 	if (staticFilename && config.mkdirp) {
