@@ -18,7 +18,7 @@ var defaultConfig = {
 	time: 'YYYY-MM-DD HH:mm:ss.sss',
 	layout: '${time} ${level} ${category} ${text}',
 	level: 'debug',
-	category: '*',
+	category: '**/*',
 	fatal: {
 		text: 'FATAL',
 		exitCode: -1
