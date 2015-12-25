@@ -1,6 +1,6 @@
 var _ = require('lodash');
 var Promise = require('bluebird');
-var wildcard = require('wildcard');
+var minimatch = require('minimatch');
 
 var levels = require('./levels');
 var formatter = require('./formatter');
@@ -56,7 +56,7 @@ function wrap (minLevel, categoryPattern, formatter, appender) {
 	};
 
 	function write (message) {
-		if (levels[message.level] >= minLevel && wildcard(categoryPattern, message.category)) {
+		if (levels[message.level] >= minLevel && minimatch(message.category, categoryPattern)) {
 			nativeWrite(formatter(message));
 		}
 	}

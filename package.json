@@ -1,6 +1,6 @@
 {
   "name": "totlog",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "The Only True Logger",
   "main": "index.js",
   "scripts": {
@@ -34,6 +34,7 @@
     "bluebird": "^3.0.5",
     "colors": "^1.1.2",
     "lodash": "^3.10.1",
+    "minimatch": "^3.0.0",
     "mkdirp": "^0.5.1",
     "moment": "^2.10.6",
     "pretty-error": "^1.2.0",
