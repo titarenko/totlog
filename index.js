@@ -15,6 +15,8 @@ function register (appender) {
 
 var consoleAppender = require('./appenders/console');
 var fileAppender = require('./appenders/file');
+var slackAppender = require('./appenders/slack');
 
 builder.register(consoleAppender);
 builder.register(fileAppender);
+builder.register(slackAppender);
