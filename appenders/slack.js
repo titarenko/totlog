@@ -11,14 +11,10 @@ function build (config) {
 	return write;
 
 	function write (message) {
-		if (message.level < (config.level || levels.error)) {
-			return;
-		}
-
 		request({
 			url: 'https://slack.com/api/chat.postMessage',
 			method: 'POST',
-			body: {
+			form: {
 				token: config.token,
 				channel: config.channel,
 				icon_emoji: config.emoji,
