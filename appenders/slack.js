@@ -11,7 +11,7 @@ function build (config) {
 	return write;
 
 	function write (message) {
-		if (message.level < levels.error) {
+		if (message.level < (config.level || levels.error)) {
 			return;
 		}
 
