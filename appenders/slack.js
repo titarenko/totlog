@@ -8,10 +8,15 @@ module.exports = {
 };
 
 function build (config) {
-	return write;
+	var last;
+
+	return {
+		write: write,
+		flush: flush
+	};
 
 	function write (message) {
-		request({
+		last = request({
 			url: 'https://slack.com/api/chat.postMessage',
 			method: 'POST',
 			form: {
@@ -21,5 +26,9 @@ function build (config) {
 				text: message.text
 			}
 		});
+	}
+
+	function flush () {
+		return last;
 	}
 }
