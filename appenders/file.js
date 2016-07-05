@@ -30,7 +30,16 @@ function build (config) {
 		: writeDynamicFilenameNoDirectoryCreation
 	);
 
-	return write;
+	var last;
+
+	return {
+		write: function () {
+			last = write.apply(this, arguments);
+		},
+		flush: function () {
+			return last;
+		}
+	};
 
 	function writeStaticFilename (message) {
 		return fs.appendFileAsync(staticFilename, message.text + EOL);
