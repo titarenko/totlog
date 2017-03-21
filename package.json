@@ -1,10 +1,15 @@
 {
   "name": "totlog",
-  "version": "0.2.3",
-  "description": "The Only True Logger",
+  "version": "1.0.0",
+  "description": "The only true log",
   "main": "index.js",
   "scripts": {
-    "test": "mocha tests"
+    "test": "istanbul cover _mocha -- --recursive tests",
+    "test-on-travis": "istanbul cover _mocha -- --recursive tests && cat ./coverage/lcov.info | coveralls",
+    "lint": "eslint . --ext .js --ignore-path .gitignore",
+    "precommit": "lint-staged",
+    "prepush": "npm run lint",
+    "release": "npm run lint && npm run test && npm version patch && npm publish && git push"
   },
   "repository": {
     "type": "git",
@@ -12,17 +17,12 @@
   },
   "keywords": [
     "logging",
-    "categorized",
-    "colorized",
-    "prettified",
-    "pretty",
-    "color",
-    "category",
+    "logger",
     "log",
-    "pattern",
-    "dynamic",
-    "filename",
-    "reload"
+    "categorized",
+    "category",
+    "colorized",
+    "color"
   ],
   "author": "Constantin Titarenko",
   "license": "MIT",
@@ -30,15 +30,24 @@
     "url": "https://github.com/titarenko/totlog/issues"
   },
   "homepage": "https://github.com/titarenko/totlog#readme",
-  "dependencies": {
-    "bluebird": "^3.0.5",
-    "colors": "^1.1.2",
-    "lodash": "^3.10.1",
-    "minimatch": "^3.0.0",
-    "mkdirp": "^0.5.1",
-    "moment": "^2.10.6",
-    "pretty-error": "^1.2.0",
-    "request": "^2.72.0",
-    "wildcard": "^1.1.2"
+  "optionalDependencies": {
+    "colors": "^1.1.2"
+  },
+  "devDependencies": {
+    "coveralls": "^2.12.0",
+    "eslint": "^3.18.0",
+    "eslint-plugin-func-call": "^1.0.3",
+    "eslint-plugin-require-path-exists": "^1.1.5",
+    "husky": "^0.13.2",
+    "istanbul": "^0.4.5",
+    "lint-staged": "^3.4.0",
+    "mocha": "^3.2.0",
+    "mock-require": "^2.0.1",
+    "should": "^11.2.1",
+    "should-sinon": "^0.0.5",
+    "sinon": "^2.1.0"
+  },
+  "lint-staged": {
+    "*.js": "eslint"
   }
 }

@@ -1,22 +1,53 @@
-var levels = require('./levels');
-var config = require('./config');
-var adapter = require('./adapter');
-var builder = require('./builder');
+const util = require('util')
+const path = require('path')
+const events = require('events')
+const colors = optionalRequire('colors/safe')
 
-builder.levels = levels;
-builder.register = register;
+const emitter = new events.EventEmitter()
 
-module.exports = builder;
+module.exports = createLogger
+module.exports.appenders = require('./appenders')
+module.exports.on = (...args) => emitter.on(...args)
 
-function register (appender) {
-	config.registerAppenderDefaults(appender.name, appender.defaults);
-	adapter.registerAppenderBuilder(appender.name, appender.build);
+function createLogger (category, silent) {
+	category = path.relative(path.join(__dirname, '../'), category)
+	return {
+		error: (...args) => log(silent, 'error', colors && colors.red, category, ...args),
+		warn: (...args) => log(silent, 'warn', colors && colors.yellow, category, ...args),
+		debug: (...args) => log(silent, 'debug', null, category, ...args),
+	}
 }
 
-var consoleAppender = require('./appenders/console');
-var fileAppender = require('./appenders/file');
-var slackAppender = require('./appenders/slack');
+function log (silent, level, color, category, ...args) {
+	const time = new Date()
+	const message = util.format(...args)
 
-builder.register(consoleAppender);
-builder.register(fileAppender);
-builder.register(slackAppender);
+	const content = `${time.toString()} ${level} ${category} ${message}`
+	const coloredContent = colors
+		? `${colors.white(time.toString())} ${color ? color(level) : level} ${colors.cyan(category)} ${message}`
+		: null
+
+	if (level == 'error') {
+		console.error(coloredContent || content) // eslint-disable-line no-console
+	} else {
+		console.log(coloredContent || content) // eslint-disable-line no-console
+	}
+
+	if (!silent) {
+		emitter.emit('message', {
+			time,
+			level,
+			category,
+			message,
+			content,
+		})
+	}
+}
+
+function optionalRequire (name) {
+	try {
+		return require(name)
+	} catch (e) {
+		return null
+	}
+}
