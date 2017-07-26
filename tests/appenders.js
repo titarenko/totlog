@@ -48,7 +48,7 @@ describe('loggers', function () {
 			mockRequire.stopAll()
 		})
 		it('should send messages', function () {
-			const instance = logstash({ url: 'localhost:3000' })
+			const instance = logstash({ url: 'udp://localhost:3000' })
 			const message = { time: '2', level: 'debug', category: '3', message: '4' }
 			instance(message)
 			const buffer = new Buffer(JSON.stringify(message))

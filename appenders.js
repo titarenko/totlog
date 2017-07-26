@@ -56,6 +56,12 @@ function logstash ({ url }) {
 		throw new Error('URL is required.')
 	}
 
+	if (!url.startsWith('udp://')) {
+		throw new Error('Only UDP protocol is supported.')
+	}
+
+	url = url.slice(6)
+
 	const [host, port] = url.split(':')
 
 	if (!port) {
