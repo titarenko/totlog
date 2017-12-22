@@ -22,9 +22,9 @@ function log (silent, level, color, category, ...args) {
 	const time = new Date()
 	const message = util.format(...args)
 
-	const content = `${time.toString()} ${level} ${category} ${message}`
+	const content = `${time.toISOString()} ${level} ${category} ${message}`
 	const coloredContent = colors
-		? `${colors.white(time.toString())} ${color ? color(level) : level} ${colors.cyan(category)} ${message}`
+		? `${colors.white(time.toISOString())} ${color ? color(level) : level} ${colors.cyan(category)} ${message}`
 		: null
 
 	if (level == 'error') {
