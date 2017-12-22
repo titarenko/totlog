@@ -1,6 +1,6 @@
 {
   "name": "totlog",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "The only true log",
   "main": "index.js",
   "scripts": {
