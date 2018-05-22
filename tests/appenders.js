@@ -40,19 +40,28 @@ describe('loggers', function () {
 			socket = {
 				on: sinon.spy(),
 				send: sinon.spy(),
+				write: sinon.spy(),
 			}
 			mockRequire('dgram', { createSocket: () => socket })
+			mockRequire('net', { createConnection: () => socket })
 			logstash = mockRequire.reRequire('../appenders').logstash
 		})
 		afterEach(function () {
 			mockRequire.stopAll()
 		})
-		it('should send messages', function () {
+		it('should send messages thru udp', function () {
 			const instance = logstash({ url: 'udp://localhost:3000' })
 			const message = { time: '2', level: 'debug', category: '3', message: '4' }
 			instance(message)
 			const buffer = new Buffer(JSON.stringify(message))
 			socket.send.should.be.calledWith(buffer, 0, buffer.length, '3000', 'localhost')
+		})
+		it('should send messages thru tcp', function () {
+			const instance = logstash({ url: 'tcp://localhost:3000' })
+			const message = { time: '2', level: 'debug', category: '3', message: '4' }
+			instance(message)
+			const buffer = new Buffer(JSON.stringify(message))
+			socket.write.should.be.calledWith(buffer)
 		})
 	})
 })

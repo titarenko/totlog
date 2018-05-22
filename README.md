@@ -42,6 +42,16 @@ log.error('anything that %s could pass to %s', 'you', 'util.format')
 // message will appear both in console and in slack
 ```
 
+## Appenders
+
+### Slack
+
+```js
+const slack = log.appenders.slack({ token, channel, icon })
+const logstashTcp = log.appenders.logstash('tcp://host:port')
+const logstashUdp = log.appenders.logstash('udp://host:port')
+```
+
 ## License
 
 MIT

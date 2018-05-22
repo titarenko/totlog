@@ -1,6 +1,7 @@
 const https = require('https')
 const querystring = require('querystring')
 const dgram = require('dgram')
+const net = require('net')
 
 const log = require('./')(__filename, true)
 
@@ -56,8 +57,10 @@ function logstash ({ url }) {
 		throw new Error('URL is required.')
 	}
 
-	if (!url.startsWith('udp://')) {
-		throw new Error('Only UDP protocol is supported.')
+	const protocol = url.slice(0, 6)
+
+	if (protocol != 'udp://' && protocol != 'tcp://') {
+		throw new Error('Only TCP and UDP protocols are supported.')
 	}
 
 	url = url.slice(6)
@@ -69,8 +72,7 @@ function logstash ({ url }) {
 	}
 
 	let udpSocket
-
-	return function (ev) {
+	function udp (ev) {
 		if (!udpSocket) {
 			udpSocket = dgram.createSocket('udp4')
 			udpSocket.on('error', error => {
@@ -88,4 +90,35 @@ function logstash ({ url }) {
 			log.error(`failed to send message to logstash due to ${error.stack}`)
 		})
 	}
+
+	let tcpSocket
+	function tcp (ev) {
+		if (!tcpSocket) {
+			tcpSocket = net.createConnection({ host, port })
+			tcpSocket.on('error', error => {
+				log.error(`tcp socket error ${error.stack}`)
+				tcpSocket.destroy()
+				tcpSocket = null
+			})
+		}
+
+		const buffer = new Buffer(JSON.stringify(ev))
+		tcpSocket.write(buffer, error => {
+			if (!error) {
+				return
+			}
+			log.error(`failed to send message to logstash due to ${error.stack}`)
+		})
+	}
+
+	function shutdownTcp () {
+		if (tcpSocket) {
+			tcpSocket.destroy()
+		}
+	}
+
+	process.on('SIGINT', shutdownTcp)
+	process.on('SIGTERM', shutdownTcp)
+
+	return protocol === 'tcp://' ? tcp : udp
 }
