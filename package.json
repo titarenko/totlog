@@ -4,6 +4,7 @@
   "description": "The only true log",
   "main": "index.js",
   "scripts": {
+    "build": "tsc --build",
     "test": "istanbul cover _mocha -- --recursive tests",
     "test-on-travis": "istanbul cover _mocha -- --recursive tests && cat ./coverage/lcov.info | coveralls",
     "lint": "eslint . --ext .js --ignore-path .gitignore",
@@ -34,6 +35,7 @@
     "colors": "^1.1.2"
   },
   "devDependencies": {
+    "@types/node": "^16.9.4",
     "coveralls": "^3.0.1",
     "eslint": "^3.18.0",
     "eslint-plugin-func-call": "^1.0.3",
@@ -45,7 +47,8 @@
     "mock-require": "^2.0.1",
     "should": "^11.2.1",
     "should-sinon": "^0.0.5",
-    "sinon": "^2.1.0"
+    "sinon": "^2.1.0",
+    "typescript": "^4.4.3"
   },
   "lint-staged": {
     "*.js": "eslint"

@@ -1,4 +1,4 @@
-const log = require('../')
+const log = require('../dist')
 const should_ = require('should')
 const sinon = require('sinon')
 const shouldSinon_ = require('should-sinon')

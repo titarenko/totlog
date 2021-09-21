@@ -1,13 +1,24 @@
-const https = require('https')
-const querystring = require('querystring')
-const dgram = require('dgram')
-const net = require('net')
+import https from 'https'
+import { IncomingMessage } from 'http'
+import querystring from 'querystring'
+import dgram from 'dgram'
+import net from 'net'
 
-const log = require('./')(__filename, true)
+import mklog, { LogEvent } from '.'
 
-module.exports =  { slack, logstash }
+const log = mklog(__filename, true)
 
-function slack ({ token, channel, icon }) {
+export interface SlackOptions {
+	token: string
+	channel: string
+	icon: string
+}
+
+export interface LogstashOptions {
+	url: string
+}
+
+export function slack ({ token, channel, icon }: SlackOptions) {
 	if (!token) {
 		throw new Error('Token is required.')
 	}
@@ -16,7 +27,7 @@ function slack ({ token, channel, icon }) {
 		throw new Error('Channel is required.')
 	}
 
-	return function (ev) {
+	return function (ev: LogEvent) {
 		const payload = querystring.stringify({
 			token: token,
 			channel: channel,
@@ -39,20 +50,20 @@ function slack ({ token, channel, icon }) {
 		request.write(payload)
 		request.end()
 
-		function handleResponse (response) {
+		function handleResponse (response: IncomingMessage) {
 			if (response.statusCode != 200) {
 				handlError(new Error(String(response.statusCode)))
 			}
 			response.on('error', handlError)
 		}
 
-		function handlError (error) {
+		function handlError (error: Error) {
 			log.error(`failed to send message to slack due to ${error.stack}`)
 		}
 	}
 }
 
-function logstash ({ url }) {
+export function logstash ({ url }: LogstashOptions) {
 	if (!url) {
 		throw new Error('URL is required.')
 	}
@@ -65,25 +76,28 @@ function logstash ({ url }) {
 
 	url = url.slice(6)
 
-	const [host, port] = url.split(':')
+	const [host, rawPort] = url.split(':')
+	const port = parseInt(rawPort, 10)
 
 	if (!port) {
 		throw new Error('Port is required.')
 	}
 
-	let udpSocket
-	function udp (ev) {
+	let udpSocket: dgram.Socket | null
+	function udp (ev: LogEvent) {
 		if (!udpSocket) {
 			udpSocket = dgram.createSocket('udp4')
-			udpSocket.on('error', error => {
+			udpSocket.on('error', (error: Error) => {
 				log.error(`udp socket error ${error.stack}`)
-				udpSocket.close()
-				udpSocket = null
+				if (udpSocket) {
+					udpSocket.close()
+					udpSocket = null
+				}
 			})
 		}
 
-		const buffer = new Buffer(JSON.stringify(ev))
-		udpSocket.send(buffer, 0, buffer.length, port, host, error => {
+		const buffer = Buffer.from(JSON.stringify(ev), 'utf-8')
+		udpSocket.send(buffer, 0, buffer.length, port, host, (error: Error | null) => {
 			if (!error) {
 				return
 			}
@@ -91,19 +105,21 @@ function logstash ({ url }) {
 		})
 	}
 
-	let tcpSocket
-	function tcp (ev) {
+	let tcpSocket: net.Socket | null
+	function tcp (ev: LogEvent) {
 		if (!tcpSocket) {
-			tcpSocket = net.createConnection({ host, port })
-			tcpSocket.on('error', error => {
+			tcpSocket = net.createConnection({ host, port: port })
+			tcpSocket.on('error', (error: Error) => {
 				log.error(`tcp socket error ${error.stack}`)
-				tcpSocket.destroy()
-				tcpSocket = null
+				if (tcpSocket) {
+					tcpSocket.destroy()
+					tcpSocket = null
+				}
 			})
 		}
 
-		const buffer = new Buffer(JSON.stringify(ev))
-		tcpSocket.write(buffer, error => {
+		const buffer = Buffer.from(JSON.stringify(ev), 'utf-8')
+		tcpSocket.write(buffer, (error: Error | undefined) => {
 			if (!error) {
 				return
 			}

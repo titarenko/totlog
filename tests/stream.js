@@ -8,7 +8,7 @@ describe('stream', function () {
 		log = { debug: sinon.spy() }
 		builder = sinon.spy(() => log)
 		mockRequire('..', builder)
-		Stream = mockRequire.reRequire('../stream')
+		Stream = mockRequire.reRequire('../dist/stream')
 	})
 	afterEach(function () {
 		mockRequire.stopAll()

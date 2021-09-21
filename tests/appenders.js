@@ -10,7 +10,7 @@ describe('loggers', function () {
 			requestApi = { on: sinon.spy(), write: sinon.spy(), end: sinon.spy() }
 			request = sinon.spy(() => requestApi)
 			mockRequire('https', { request })
-			slack = mockRequire.reRequire('../appenders').slack
+			slack = mockRequire.reRequire('../dist/appenders').slack
 		})
 		afterEach(function () {
 			mockRequire.stopAll()
@@ -44,7 +44,7 @@ describe('loggers', function () {
 			}
 			mockRequire('dgram', { createSocket: () => socket })
 			mockRequire('net', { createConnection: () => socket })
-			logstash = mockRequire.reRequire('../appenders').logstash
+			logstash = mockRequire.reRequire('../dist/appenders').logstash
 		})
 		afterEach(function () {
 			mockRequire.stopAll()
