@@ -102,7 +102,7 @@ function logstash ({ url }) {
 			})
 		}
 
-		const buffer = new Buffer(JSON.stringify(ev))
+		const buffer = new Buffer(JSON.stringify(ev) + '\n')
 		tcpSocket.write(buffer, error => {
 			if (!error) {
 				return
