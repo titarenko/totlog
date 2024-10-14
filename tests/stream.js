@@ -1,6 +1,6 @@
-const should_ = require('should')
 const mockRequire = require('mock-require')
 const sinon = require('sinon')
+require('should')
 
 describe('stream', function () {
   let Stream, log, builder

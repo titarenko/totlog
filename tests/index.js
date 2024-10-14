@@ -1,7 +1,7 @@
 const log = require('../')
-// const should_ = require('should')
 const sinon = require('sinon')
-// const shouldSinon_ = require('should-sinon')
+require('should')
+require('should-sinon')
 
 require('colors')
 

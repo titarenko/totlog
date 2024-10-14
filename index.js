@@ -47,7 +47,7 @@ function log (silent, level, color, category, ...args) {
 function optionalRequire (name) {
   try {
     return require(name)
-  } catch (e) {
+  } catch (e) { // eslint-disable-line unused-imports/no-unused-vars
     return null
   }
 }
