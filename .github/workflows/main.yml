@@ -1,0 +1,101 @@
+name: main
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  checks: write
+  contents: write
+  pull-requests: read
+  packages: read
+
+jobs:
+  linter:
+    name: run eslint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: latest
+
+      - name: Install Node.js dependencies
+        run: npm install --include=dev
+
+      - name: Run linter with report
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Save linting report
+        run: npx eslint --output-file eslint_report.json --format json .
+        continue-on-error: true
+
+      - name: Annotate Code Linting Results
+        uses: ataylorme/eslint-annotate-action@v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          report-json: "eslint_report.json"
+  tests:
+    name: run tests and coverage report
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: development
+      BUHOI_REDIS: redis://localhost:6379
+      BUHOI_MQ: amqp://guest:guest@localhost:5672
+    services:
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+      rabbitmq:
+        image: rabbitmq
+        env:
+          RABBITMQ_DEFAULT_USER: guest
+          RABBITMQ_DEFAULT_PASS: guest
+        ports:
+          - 5672:5672
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: latest
+
+      - name: Install Node.js dependencies
+        run: npm install --include=dev
+
+      - name: Install Mocha reporter
+        run: npm install mocha-ctrf-json-reporter
+
+      - name: Run tests
+        run: npx mocha -r should --reporter mocha-ctrf-json-reporter --recursive tests
+        continue-on-error: true
+
+      - name: Add annotations
+        run: npx github-actions-ctrf ctrf-report.json
+        working-directory: ctrf
+
+      - name: Create tests coverage report
+        run: npm run test-coverage
+        continue-on-error: true
+
+      - name: Send report to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          file: .nyc_output/coverage.lcov
