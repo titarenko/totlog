@@ -3,7 +3,7 @@ const sinon = require('sinon')
 const should_ = require('should')
 const shouldSinon_ = require('should-sinon')
 
-describe('loggers', function () {
+describe('appenders', function () {
   describe('slack', function () {
     let request, requestApi, slack
     beforeEach(function () {
@@ -53,14 +53,14 @@ describe('loggers', function () {
       const instance = logstash({ url: 'udp://localhost:3000' })
       const message = { time: '2', level: 'debug', category: '3', message: '4' }
       instance(message)
-      const buffer = new Buffer(JSON.stringify(message))
+      const buffer = Buffer.from(JSON.stringify(message))
       socket.send.should.be.calledWith(buffer, 0, buffer.length, '3000', 'localhost')
     })
     it('should send messages thru tcp', function () {
       const instance = logstash({ url: 'tcp://localhost:3000' })
       const message = { time: '2', level: 'debug', category: '3', message: '4' }
       instance(message)
-      const buffer = new Buffer(JSON.stringify(message))
+      const buffer = Buffer.from(JSON.stringify(message) + '\n')
       socket.write.should.be.calledWith(buffer)
     })
   })
